@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    description: Jaffle Shop
+    loader: Manual
+    database: PostgreSQL-3058
+    schema: jaffle_shop
+    tables:
+      - name: customers
+      - name: orders
+ 
