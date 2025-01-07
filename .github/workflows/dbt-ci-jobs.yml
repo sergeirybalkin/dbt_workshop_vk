@@ -94,6 +94,7 @@ jobs:
           . venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
+          python -m pip install dbt-core dbt-postgres
 
       # Install dbt package dependencies
       - name: Install dbt package dependencies
