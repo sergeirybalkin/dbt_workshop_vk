@@ -9,4 +9,3 @@ sources:
     tables:
       - name: customers
       - name: orders
- 
