@@ -50,6 +50,8 @@ jobs:
       - name: Compile dbt project
         run: |
           . venv/bin/activate
+          pip install pre-commit
+          pre-commit install
           dbt compile
         env:
           DBT_USER: ${{ secrets.DBT_USER }}
