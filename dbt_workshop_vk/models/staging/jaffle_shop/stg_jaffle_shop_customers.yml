@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_jaffle_shop__customers
+  - name: stg_jaffle_shop_customers
     description: This model cleans up customer data
     columns:
       - name: customer_id
