@@ -60,7 +60,7 @@ jobs:
       - name: Run pre-commit on all changed files
         run: |
           . venv/bin/activate
-          files=$(git diff --name-only origin/main)
+          files=$(git diff --name-only origin/master)
           if [ -n "$files" ]; then
             pre-commit run --files $files
           else
