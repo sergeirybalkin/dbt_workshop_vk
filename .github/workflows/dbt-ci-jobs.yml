@@ -15,7 +15,7 @@ jobs:
     steps:
       # Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -32,7 +32,6 @@ jobs:
           . venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-          python -m pip install dbt-core dbt-postgres
 
       # Install dbt package dependencies
       - name: Install dbt package dependencies
@@ -50,8 +49,6 @@ jobs:
       - name: Compile dbt project
         run: |
           . venv/bin/activate
-          pip install pre-commit
-          pre-commit install
           dbt compile
         env:
           DBT_USER: ${{ secrets.DBT_USER }}
@@ -63,9 +60,57 @@ jobs:
       - name: Run pre-commit on all changed files
         run: |
           . venv/bin/activate
-          files=$(git diff --name-only origin/master)
+          files=$(git diff --name-only origin/main)
           if [ -n "$files" ]; then
             pre-commit run --files $files
           else
             echo "No modified files to check."
           fi
+
+  dbt-build:
+    runs-on: ubuntu-latest
+    needs: pre-commit # Ensures dbt-build runs after pre-commit
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Install dbt package dependencies
+      - name: Install dbt package dependencies
+        run: |
+          . venv/bin/activate
+          dbt deps
+
+      # Copy the profiles.yml file to the correct location
+      - name: Copy profiles.yml to /home/runner/.dbt
+        run: |
+          mkdir -p /home/runner/.dbt
+          cp ./profiles.yml /home/runner/.dbt/profiles.yml
+
+      # Run dbt build for CI target
+      - name: Run dbt build (CI)
+        run: |
+          . venv/bin/activate
+          dbt build --target ci
+        env:
+          DBT_USER: ${{ secrets.DBT_USER }}
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+          DBT_HOST: ${{ secrets.DBT_HOST }}
+          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
