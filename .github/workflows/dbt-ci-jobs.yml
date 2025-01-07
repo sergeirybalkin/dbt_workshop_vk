@@ -32,6 +32,7 @@ jobs:
           . venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
+          python -m pip install dbt-core dbt-postgres
 
       # Install dbt package dependencies
       - name: Install dbt package dependencies
@@ -49,6 +50,8 @@ jobs:
       - name: Compile dbt project
         run: |
           . venv/bin/activate
+          pip install pre-commit
+          pre-commit install
           dbt compile
         env:
           DBT_USER: ${{ secrets.DBT_USER }}
